@@ -45,7 +45,7 @@ function setupResetBtn(scene) {
   };
 
   resetBtn = new CSS2DObject(btn);
-  scene.add(resetBtn);
+  //scene.add(resetBtn);
 }
 
 let currentScreen;
