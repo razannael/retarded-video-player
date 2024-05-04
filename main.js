@@ -1,46 +1,71 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import CannonDebugger from 'cannon-es-debugger';
-import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import Stadium from './objects/Stadium';
+import Football from './objects/Football';
+import Screens from './objects/Screens';
+import Stars from './objects/Stars';
+import {
+  CSS2DRenderer
+} from "three/examples/jsm/renderers/CSS2DRenderer.js";
+
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  1000
+);
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById('scene'),
+  canvas: document.getElementById('scene')
 });
+
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 
+const cssRenderer = new CSS2DRenderer();
+cssRenderer.setSize(window.innerWidth, window.innerHeight);
+cssRenderer.domElement.style.position = "fixed";
+cssRenderer.domElement.style.top = 0;
+cssRenderer.domElement.style.zIndex = 0;
+document.body.appendChild(cssRenderer.domElement);
+
 const world = new CANNON.World({
-  gravity: new CANNON.Vec3(0, -9.82, 0),
+  gravity: new CANNON.Vec3(0, -9.82, 0)
 });
 
+const gltfLoader = new GLTFLoader();
 
-const groundBody = new CANNON.Body({
-  mass: 0,
-  shape: new CANNON.Plane(),
-  material: new CANNON.Material('ground')
-});
-groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-world.addBody(groundBody);
+Stadium.create(scene, world, gltfLoader);
+Football.create(scene, world, gltfLoader);
+const screens = Screens.create(scene, world);
+Football.setupCollisions(screens);
+Stars.create(scene);
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+scene.add(directionalLight);
+directionalLight.position.set(0,10,0);
 
 
-const controls = new OrbitControls(camera, renderer.domElement)
-
-const cannonDebugger = new CannonDebugger(scene, world)
-
-
-camera.position.set(0, 2, 5);
 const animate = () => {
-  requestAnimationFrame(animate);
-  controls.update();
-  cannonDebugger.update();
+  Stars.animate();
+  Football.animate(camera);
+
+  world.fixedStep();
+  cssRenderer.render(scene, camera);
   renderer.render(scene, camera);
+  requestAnimationFrame(animate);
 }
 
 animate();
 
 window.onresize = () => {
+  cssRenderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
 }
