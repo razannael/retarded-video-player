@@ -12,7 +12,7 @@
 ## Setup
 To run this project, install it locally using npm:
 
-\`\`\`bash
+``` bash
 npm install
 npm run dev
 \`\`\`
