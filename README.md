@@ -20,6 +20,8 @@ npm run dev
 ## Demo
 
 
-https://github.com/razannael/retarded-video-player/assets/127951072/14070430-59c8-4cd5-b710-207c35a4612f
+https://github.com/razannael/retarded-video-player/assets/127951072/90fbc603-26e5-4e59-94cc-60dcf5d1d372
+
+
 
 
